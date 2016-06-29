@@ -72,7 +72,7 @@ import pipes
 def package_installed(module, name):
     cmd = ['pkginfo']
     cmd.append('-q')
-    cmd.append(name)
+    cmd.extend(name)
     rc, out, err = run_command(module, cmd)
     if rc == 0:
         return True
@@ -84,7 +84,7 @@ def package_latest(module, name, site):
     cmd = [ 'pkgutil', '-U', '--single', '-c' ]
     if site is not None:
         cmd += [ '-t', site]
-    cmd.append(name)
+    cmd.extend(name)
     rc, out, err = run_command(module, cmd)
     # replace | tail -1 |grep -v SAME
     # use -2, because splitting on \n create a empty line
@@ -104,7 +104,7 @@ def package_install(module, state, name, site, update_catalog):
         cmd += [ '-t', site ]
     if state == 'latest':
         cmd += [ '-f' ] 
-    cmd.append(name)
+    cmd.extend(name)
     (rc, out, err) = run_command(module, cmd)
     return (rc, out, err)
 
@@ -114,7 +114,7 @@ def package_upgrade(module, name, site, update_catalog):
         cmd += [ '-U' ]
     if site is not None:
         cmd += [ '-t', site ]
-    cmd.append(name)
+    cmd.extend(name)
     (rc, out, err) = run_command(module, cmd)
     return (rc, out, err)
 
@@ -126,7 +126,7 @@ def package_uninstall(module, name):
 def main():
     module = AnsibleModule(
         argument_spec = dict(
-            name = dict(required = True),
+            name = dict(required = True, type='list'),
             state = dict(required = True, choices=['present', 'absent','latest']),
             site = dict(default = None),
             update_catalog = dict(required = False, default = False, type='bool'),
